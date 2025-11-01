@@ -93,19 +93,22 @@ jobs:
           ref: '${{ github.head_ref }}'
           fetch-depth: 0
       - name: Add Major ${{needs.get-next-version.outputs.major-version}} Tag
-        uses: jlroskens/savetag@feature/initial-version
+        uses: jlroskens/savetag@main
         with: 
           tag: ${{needs.get-next-version.outputs.major-version}}
 
       - name: Add Minor ${{needs.get-next-version.outputs.minor-version}} Tag
-        uses: jlroskens/savetag@feature/initial-version
+        uses: jlroskens/savetag@main
         with: 
           tag: ${{needs.get-next-version.outputs.minor-version}}
-
+      - name: Add v${{needs.get-next-version.outputs.version}} Tag
+        uses: jlroskens/savetag@main
+        with: 
+          tag: v${{needs.get-next-version.outputs.version}}
       - name: Create Release ${{needs.get-next-version.outputs.version}}
         if: ${{ success() && ( github.ref_name == inputs.release-branch )}}
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{needs.get-next-version.outputs.version}}
-        run: gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION#v}" --generate-notes
+        run: gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --generate-notes

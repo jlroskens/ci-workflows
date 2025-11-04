@@ -117,8 +117,8 @@ jobs:
           RELEASE_VERSION: ${{needs.get-next-version.outputs.version}}
         run: |
           # Get the PR description and use it for the release
-          gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body' \
-            | gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --description-file -
+          PR_NOTES=$(gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body')
+          gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --notes "$PR_NOTES" --fail-on-no-commits
       
       - name: Create Release from Direct Push
         if: ${{ success() && github.event_name == 'push' && github.ref_name == inputs.release-branch }}
@@ -129,4 +129,4 @@ jobs:
         run: |
           # Get the commit message for direct push
           COMMIT_MSG="${{ github.event.head_commit.message }}"
-          gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --description "$COMMIT_MSG"
+          gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --notes "$COMMIT_MSG" --fail-on-no-commits

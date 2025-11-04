@@ -105,10 +105,24 @@ jobs:
         uses: jlroskens/savetag@v1
         with: 
           tag: v${{needs.get-next-version.outputs.version}}
-      - name: Create Release ${{needs.get-next-version.outputs.version}}
-        if: ${{ success() && ( github.ref_name == inputs.release-branch )}}
+      - name: Create Release from PR Merge
+        if: ${{ success() && github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true }}
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_VERSION: ${{needs.get-next-version.outputs.version}}
-        run: gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --generate-notes
+        run: |
+          # Get the PR description and use it for the release
+          gh pr view ${{ github.event.pull_request.number }} --json body --jq '.body' \
+            | gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --description-file -
+      
+      - name: Create Release from Direct Push
+        if: ${{ success() && github.event_name == 'push' && github.ref_name == inputs.release-branch }}
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VERSION: ${{needs.get-next-version.outputs.version}}
+        run: |
+          # Get the commit message for direct push
+          COMMIT_MSG="${{ github.event.head_commit.message }}"
+          gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --description "$COMMIT_MSG"

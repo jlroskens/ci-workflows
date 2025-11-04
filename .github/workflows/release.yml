@@ -92,10 +92,6 @@ jobs:
         with:
           ref: '${{ github.head_ref }}'
           fetch-depth: 0
-      - name: output stuff
-        run: |
-          echo "github.event_name: ${{ github.event_name }}"
-          echo "github.ref_name: ${{ github.ref_name }}"
       - name: Create Release from Commit
         if: ${{ success() && github.event_name == 'push' && github.ref_name == inputs.release-branch }}
         shell: bash

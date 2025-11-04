@@ -18,4 +18,4 @@ jobs:
     name: Creating New Release
     uses: ./.github/workflows/release.yml
     with:
-      release-branch: release/better-release-description
+      release-branch: feature/better-release-description

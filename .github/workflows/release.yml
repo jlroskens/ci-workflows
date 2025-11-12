@@ -102,14 +102,14 @@ jobs:
         run: |
           gh release create "${RELEASE_VERSION}" --title="v${RELEASE_VERSION}" --notes "$COMMIT_MSG"
       - name: Add Major ${{needs.get-next-version.outputs.major-version}} Tag
-        uses: jlroskens/savetag@v1
+        uses: rNimbus-com/savetag@v1
         with: 
           tag: ${{needs.get-next-version.outputs.major-version}}
       - name: Add Minor ${{needs.get-next-version.outputs.minor-version}} Tag
-        uses: jlroskens/savetag@v1
+        uses: rNimbus-com/savetag@v1
         with: 
           tag: ${{needs.get-next-version.outputs.minor-version}}
       - name: Add v${{needs.get-next-version.outputs.version}} Tag
-        uses: jlroskens/savetag@v1
+        uses: rNimbus-com/savetag@v1
         with: 
           tag: v${{needs.get-next-version.outputs.version}}
